@@ -2,14 +2,20 @@
 ## Requirements
 - RECURSION
 - Open a file (does it need to save? does it need to print each time?)
-- Expands zombie by 1 each time 
+- Expands zombie by 1 each time (Does each zombie get checked EACH TIME?)
   - Check if there are any zombies (Error catching)
   - Checks if 15 zombies in line (all directions) and defense
   
 ## Parts
 - Open a file
-  - Check if the file is valid
+  - Check if the file is valid (if Z=0, declare) (if messed up spacing, declare) (if not a box, declare)
   - Read the file
   - Place each item into a nested list [row][column]
 - Begin the zombie invasion
-  - Give an 
+  - Generate a random number (0-3) for each direction
+  - Determine what is in the corresponding spot
+  - [ ] If a dot, fill
+  - [ ] If a human, kill and check for other humans
+  - [ ] If a zombie, skip
+  - [ ] If a wall, check for 15 in a row, and then check if something behind it, then remove (can zombies block a wall from breaking? does the zombie immediately fill the space?) (then check for any other walls NEARBY to be broken)
+  
