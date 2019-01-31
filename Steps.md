@@ -1,5 +1,7 @@
 # Steps to get this to work
+
 ## Requirements
+
 - RECURSION
 - Open a file (does it need to save? does it need to print each time?)
 - Expands zombie by 1 each time (Does each zombie get checked EACH TIME?)
@@ -7,6 +9,7 @@
   - Checks if 15 zombies in line (all directions) and defense
   
 ## Parts
+
 - Open a file
   - Check if the file is valid (if Z=0, declare) (if not a box, declare: 15x40, no spaces) (only allowed characters: ```. Z H T W```
   - Read the file
