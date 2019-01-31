@@ -8,7 +8,7 @@
   
 ## Parts
 - Open a file
-  - Check if the file is valid (if Z=0, declare) (if not a box, declare: 15x40, no spaces)
+  - Check if the file is valid (if Z=0, declare) (if not a box, declare: 15x40, no spaces) (only allowed characters: ```. Z H T W```
   - Read the file
   - Place each item into a nested list [row][column]
 - Begin the zombie invasion
