@@ -13,7 +13,7 @@
 - Open a file
   - Check if the file is valid (if Z=0, declare) (if not a box, declare: 15x40, no spaces) (only allowed characters: ```. Z H T W```
   - Read the file
-  - Place each item into a nested list [row][column]
+  - Place each item into a nested list [column][row]
 - Begin the zombie invasion
   - Generate a random number (0-3) for each direction
   - Determine what is in the corresponding spot
@@ -23,3 +23,4 @@
   - [ ] If a wall, check for 15 in a row, and then check if something behind it, then remove (can zombies block a wall from breaking? does the zombie immediately fill the space?) (then check for any other walls NEARBY to be broken)
   
 Wingware Code 6N31E-RY9CY-J9VTQ-6KJD5
+E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/
