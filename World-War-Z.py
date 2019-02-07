@@ -47,14 +47,7 @@ def load_map(text_file):
     
     # Load data into list
     for l in xrange(len(source_lines)):
-        game_map.append([source_lines[l][0][i] for i in xrange(40)])
+        game_map.append([source_lines[l][i] for i in xrange(40)])
     # End for l 
     
     return game_map
-
-t = raw_input("where's the file? ")
-a = load_map(t)
-if a is False:
-    print('uh oh')
-else:
-    print a
