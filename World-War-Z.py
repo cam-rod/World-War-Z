@@ -28,8 +28,6 @@ def load_map(text_file):
     with open(text_file, 'r') as game_source:
         source_raw = game_source.read()
     source_lines = source_raw.splitlines()
-   
-    # Determine length of first line for rectangle verification
     source_line_length = len(source_lines[0])
     
     # Validate game_source has 1 human, only contains valid characters, and is a rectangle
@@ -49,18 +47,11 @@ def load_map(text_file):
         return False        
     # End if re.findall
     
-    # Load game data into list; appends each character into a list, which is appended to the list game_map
-    for l in range(len(source_lines)):
-        one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
-        game_map.append(one_row)
-    # End for l 
-    
     # Locate all zombies in the map, and append within a list as the final list value
     while True:
         if one_zombie >= len(source_raw):
             break
         # End if one_zombie
-        # Find a zombie, determine which line it's on, and appendthe column and row to all_zombies 
         try:
             one_zombie += source_raw.find('Z', one_zombie)
             line = (one_zombie / source_line_length)
@@ -69,6 +60,12 @@ def load_map(text_file):
         except ValueError:
             break
     # End while True
+
+    # Load game data into all_zombies
+    for l in range(len(source_lines)):
+        one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
+        game_map.append(one_row)
+    # End for l 
     game_map.append(all_zombies)
 
     return game_map
