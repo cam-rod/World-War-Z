@@ -15,12 +15,13 @@
   - Read the file
   - Place each item into a nested list [row][column]
 - Begin the zombie invasion
-  - Generate a random number (0-3) for each direction
+  - Use the initial zombie to scan [up][down][left][right]
   - Determine what is in the corresponding spot
   - [ ] If a dot, fill
   - [ ] If a human, kill and check for other humans
-  - [ ] If a zombie, skip
-  - [ ] If a wall, check for 15 in a row, and then check if something behind it, then remove (can zombies block a wall from breaking? does the zombie immediately fill the space?) (then check for any other walls NEARBY to be broken)
+  - [ ] If a zombie, check the next direction
+  - [ ] If a wall, check for 15 in a row, and then check if something behind it, then remove (can zombies block a wall from breaking? does the zombie immediately fill the space?) (then check for any other walls NEARBY to be broken)ot mo
+  - [ ] if it cannot move, check the spot in reverse order (right/left/down/up) for a zombie and use that. Repeat as necessary; upon reaching the original zombie, search for other original zombies, then end the game.
   
 Wingware Code 6N31E-RY9CY-J9VTQ-6KJD5
 E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/

@@ -14,12 +14,15 @@ game_source: FILE:  the file that contains the text form of the game map
 source_raw: STR: raw form of the entire file, used for verification
 source_lines: LIST: a list storing each line of game_source, used to load game_map
 source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
-total_zombies: INT: a count of how many zombies are in the file
+all_zombies: LIST: contains data on the location of all zombies
+one_zombie: INT: keeps track while adding location of zombies to all_zombies
 
 game_map: LIST: the returned list that stores the game map
 """
 def load_map(text_file):
     game_map = []
+    all_zombies = []
+    one_zombie = 0
     
     # Open and read the file, then split into lines
     with open(text_file, 'r') as game_source:
@@ -52,21 +55,20 @@ def load_map(text_file):
         game_map.append(one_row)
     # End for l 
     
-    # Determine how many zombies are in the map, and append as the final list value
-    total_zombies = len(re.findall('Z', source_raw))
-    game_map.append(total_zombies)
-    
+    # Locate all zombies in the map, and append within a list as the final list value
+    while True:
+        if one_zombie >= len(source_raw):
+            break
+        # End if one_zombie
+        # Find a zombie, determine which line it's on, and appendthe column and row to all_zombies 
+        try:
+            one_zombie += source_raw.find('Z', one_zombie)
+            line = (one_zombie / source_line_length)
+            all_zombies.append([line, one_zombie-(line*source_line_length)])
+            one_zombie += 1
+        except ValueError:
+            break
+    # End while True
+    game_map.append(all_zombies)
+
     return game_map
-
-"""
-This function will determine an initial zombie for the invasion to begin with.
-
-map: LIST: contains the map used by the zombie invasion
-
-location: LIST: the returned list that provides the location of the first zombie
-"""
-def first_zombie(map):
-    # Scan each spot for a zombie, and end the loop when a zombie is found
-    for i in range(len(map)):
-        for j in range(len(map[i])):
-            
