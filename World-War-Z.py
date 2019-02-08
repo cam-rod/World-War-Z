@@ -69,3 +69,64 @@ def load_map(text_file):
     game_map.append(all_zombies)
 
     return game_map
+
+'''
+This recursive function calls itself to spread zombies until they cannot expand further.
+
+game: LIST: the nested list of locations on the map
+first: LIST: contains the location of the first zombie, with the first slot telling which zombie to use
+current: LIST: identifies the current zombie being spread, in format [row][column]
+broken: LIST: a temporary list used to replace all broken walls with dots
+x: INT: indicates the row of the current zombie
+y: INT: indicates the column of the current zombie
+'''
+def invasion(game, first, current):
+    broken = []
+    if current == []:
+        current = first[first[0]]
+    # End if current
+    x, y = current
+    
+    if game[x-1][y] not in ['Z', 'T']: # Zombie spread up
+        if game[x-1][y] in ['.', 'H']:
+            game[x-1][y] = invade_human_dot(game, current, 0)
+        else:
+            broken = break_wall(game, current)
+        # End if game[x-1][y]
+    elif game[x+1][y] not in ['Z', 'T']: # Zombie spread down
+        if game[x+1][y] in ['.', 'H']:
+            game[x+1][y] = invade_human_dot(game, current, 1)
+        else:
+            broken = break_wall(game, current)
+        # End if game[x+1][y]
+    elif game[x][y-1] not in ['Z', 'T']: # Zombie spread left
+        if game[x][y-1] in ['.', 'H']:
+            game[x][y-1] = invade_human_dot(game, current, 2)
+        else:
+            broken = break_wall(game, current)
+        # End if game[x][y-1]
+    elif game[x][y+1] not in ['Z', 'T']: # Zombie spread right
+        if game[x][y+1] in ['.', 'H']:
+            game[x][y+1] = invade_human_dot(game, current, 3)
+        else:
+            broken = break_wall(game, current)
+        # End if game[x][y]
+        
+'''
+This function fills a human or empty spot if that spot is not on the opposite side of the map to the original point.
+
+game: LIST: the nested list of locations on the map
+current: LIST: identifies the current zombie being spread, in format [row][column]
+direction: INT: identifies which way the zombie would spread, in format 0=up 1=down 2=left 3=right
+'''
+def invade_human_dot(game, current, direction):
+    pass
+
+'''
+This function checks if 15 zombies are present to break down a wall, and also checks if nearby walls also can break.
+
+game: LIST: the nested list of locations on the map
+current: LIST: identifies the current zombie being spread, in format [row][column]
+'''
+def break_wall(game, current):
+    pass
