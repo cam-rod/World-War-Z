@@ -61,7 +61,7 @@ def load_map(text_file):
             break
     # End while True
 
-    # Load game data into all_zombies
+    # Load game data into all_zombies, with a list of rows containing a list of characters
     for l in range(len(source_lines)):
         one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
         game_map.append(one_row)
@@ -69,6 +69,7 @@ def load_map(text_file):
     game_map.append(all_zombies)
 
     return game_map
+# End def load_map
 
 '''
 This recursive function calls itself to spread zombies until they cannot expand further.
@@ -87,30 +88,51 @@ def invasion(game, first, current):
     # End if current
     x, y = current
     
+    # Spread zombies across the map
     if game[x-1][y] not in ['Z', 'T']: # Zombie spread up
         if game[x-1][y] in ['.', 'H']:
             game[x-1][y] = invade_human_dot(game, current, 0)
+            if game[x-1][y] in ['.', 'H']: # Checks if valuwe changed
+                pass
+            else:
+                invasion(game, first, [x-1, y])
+            # End if game[x-1][y]
         else:
             broken = break_wall(game, current)
         # End if game[x-1][y]
     elif game[x+1][y] not in ['Z', 'T']: # Zombie spread down
         if game[x+1][y] in ['.', 'H']:
             game[x+1][y] = invade_human_dot(game, current, 1)
+            if game[x+1][y] in ['.', 'H']: # Checks if valuwe changed
+                pass
+            else:
+                invasion(game, first, [x+1, y])
+            # End if game[x+1][y]            
         else:
             broken = break_wall(game, current)
         # End if game[x+1][y]
     elif game[x][y-1] not in ['Z', 'T']: # Zombie spread left
         if game[x][y-1] in ['.', 'H']:
             game[x][y-1] = invade_human_dot(game, current, 2)
+            if game[x][y-1] in ['.', 'H']: # Checks if valuwe changed
+                pass
+            else:
+                invasion(game, first, [x, y-1])
+            # End if game[x][y-1]            
         else:
             broken = break_wall(game, current)
         # End if game[x][y-1]
     elif game[x][y+1] not in ['Z', 'T']: # Zombie spread right
         if game[x][y+1] in ['.', 'H']:
             game[x][y+1] = invade_human_dot(game, current, 3)
+            if game[x][y+1] in ['.', 'H']: # Checks if valuwe changed
+                pass
+            else:
+                invasion(game, first, [x, y+1])
+            # End if game[x][y+1]            
         else:
             broken = break_wall(game, current)
-        # End if game[x][y]
+        # End if game[x][y+1]
         
 '''
 This function fills a human or empty spot if that spot is not on the opposite side of the map to the original point.
@@ -118,9 +140,43 @@ This function fills a human or empty spot if that spot is not on the opposite si
 game: LIST: the nested list of locations on the map
 current: LIST: identifies the current zombie being spread, in format [row][column]
 direction: INT: identifies which way the zombie would spread, in format 0=up 1=down 2=left 3=right
+x: INT: indicates the row of the current zombie
+y: INT: indicates the column of the current zombie
+width: INT: indicates the width of the map
+height: INT: indicates the height of the map
 '''
 def invade_human_dot(game, current, direction):
-    pass
+    x, y = current
+    width = len(game[0])
+    height = len(game)
+    
+    # Verify new zombie does not jump to other side of map
+    if direction == 0: # Spread up
+        if game[x-1] is game[height-1]:
+            return game[x-1][y]
+        else:
+            return 'Z'
+        # End if game[x-1]
+    elif direction == 1: # Spread down
+        if game[x+1] is game[0]:
+            return game[x+1][y]
+        else:
+            return 'Z'
+        # End if game[x+1]
+    elif direction == 2: # Spread left
+        if game[x][y-1] is game[x][width-1]:
+            return game[x][y-1]
+        else:
+            return 'Z'
+        # End if game[x][y+1]
+    elif direction == 3: # Spread up
+        if game[x][y+1] is game[x][0]:
+            return game[x][y+1]
+        else:
+            return 'Z'
+        # End if game [x][y+1]
+    # End if direction
+# End def invade_human_dot
 
 '''
 This function checks if 15 zombies are present to break down a wall, and also checks if nearby walls also can break.
