@@ -12,11 +12,11 @@
 ## Parts
 
 - Open a file
-  - Check if the file is valid (if Z=0, declare) (if not a box, 
+  - Check if the file is valid (if Z=0, declare) (if not a 
 
-declare: 15x40, no spaces) (only allowed characters: ```. Z H T 
+box, declare: 15x40, no spaces) (only allowed characters: ```. 
 
-W```
+Z H T W```
   - Read the file
   - Place each item into a nested list [row][column]
 - Begin the zombie invasion
@@ -39,9 +39,6 @@ original zombies, then end the game.
 Wingware Code 6N31E-RY9CY-J9VTQ-6KJD5
 E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/
 
-borders:
+CREATE GLOBAL VARS (despite my internal strife)(although maybe 
 
-  - [0][n]
-  - [n][0]
-  - [99][n]
-  - [n][99]
+not)
