@@ -8,8 +8,8 @@ import re
 """
 Data Dictionary
 
-game_map: LIST: a 2D array of the game playing field, in format [row][column]
-game_setup: LIST/BOOL: returned list of game_map, x, and y; this is False if setup fails
+game: LIST: a 2D array of the game playing field, in format [row][column]
+game_setup: LIST/BOOL: returned list of game, x, and y; this is False if setup fails
 width: INT: the width of the map
 height: INT: the height of the map
 x: INT: indicates the row of the zombie being checked for spreading
@@ -18,16 +18,17 @@ y: INT: indicates the column of the zombie being checked for spreading
 text_file: STR: the location of the file containing the game map
 game_source: FILE:  the file that contains the text form of the game map
 source_raw: STR: raw form of the entire file, used for verification
-source_lines: LIST: a list storing each line of game_source, used to load game_map
+source_lines: LIST: a list storing each line of game_source, used to load game
 source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
 first_zombie: INT: the location of one zombie on the map, used to start the invasion
 direction: INT: indicates the direction relative to [x][y] of zombie infection or breaking wall
 zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
+game_str: STR: string form of the current game map
 """
 
 # This function will read the file, verify the data, and return the map and zombies via 2 lists.
 def load_map(text_file):
-    game_map = []
+    game = []
     first_zombie = 0
     x = 0
     y = 0
@@ -70,167 +71,194 @@ def load_map(text_file):
         x = -1
     # End try/except
 
-    # Load game data into game_map, with a list of rows containing a list of characters
+    # Load game data into game, with a list of rows containing a list of characters
     for l in range(len(source_lines)):
         one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
-        game_map.append(one_row)
+        game.append(one_row)
     # End for l 
 
-    return [game_map, x, y]
+    return [game, x, y]
 # End def load_map
 
 
 # This recursive function calls itself to spread zombies until they cannot expand further.
-def invasion(game_map, x, y):
+def invasion(game, x, y):
     # Check if any walls should be broken
-    game_map = break_wall(game_map)
+    game = break_wall(game)
 
     # Spread zombies across the map
-    if game_map[x-1][y] not in ['Z', 'T', 'W']: # Zombie spread up
-        game_map[x-1][y] = invade_human_dot(game_map, x, y, 0)
-        if game_map[x-1][y] in ['.', 'H']: # Checks if value changed
+    if game[x-1][y] not in ['Z', 'T', 'W']: # Zombie spread up
+        game[x-1][y] = invade_human_dot(game, x, y, 0)
+        if game[x-1][y] in ['.', 'H']: # Checks if value changed
             pass
         else:
-            print_map(game_map)
-            invasion(game_map, x-1, y)
-        # End if game_map[x-1][y]
-    elif game_map[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
-        game_map[x+1][y] = invade_human_dot(game_map, x, y, 1)
-        if game_map[x+1][y] in ['.', 'H']: # Checks if value changed
+            print_map(game)
+            invasion(game, x-1, y)
+        # End if game[x-1][y]
+    elif game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
+        game[x+1][y] = invade_human_dot(game, x, y, 1)
+        if game[x+1][y] in ['.', 'H']: # Checks if value changed
             pass
         else:
-            print_map(game_map)
-            invasion(game_map, x+1, y)
-        # End if game_map[x+1][y]
-    elif game_map[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
-        game_map[x][y-1] = invade_human_dot(game_map, x, y, 2)
-        if game_map[x][y-1] in ['.', 'H']: # Checks if value changed
+            print_map(game)
+            invasion(game, x+1, y)
+        # End if game[x+1][y]
+    elif game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
+        game[x][y-1] = invade_human_dot(game, x, y, 2)
+        if game[x][y-1] in ['.', 'H']: # Checks if value changed
             pass
         else:
-            print_map(game_map)
-            invasion(game_map, x, y-1)
-        # End if game_map[x][y-1]
-    elif game_map[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
-        game_map[x][y+1] = invade_human_dot(game_map, x, y, 3)
-        if game_map[x][y+1] in ['.', 'H']: # Checks if value changed
+            print_map(game)
+            invasion(game, x, y-1)
+        # End if game[x][y-1]
+    elif game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
+        game[x][y+1] = invade_human_dot(game, x, y, 3)
+        if game[x][y+1] in ['.', 'H']: # Checks if value changed
             pass
         else:
-            print_map(game_map)
-            invasion(game_map, x, y+1)
-        # End if game_map[x][y+1]
-    
+            print_map(game)
+            invasion(game, x, y+1)
+        # End if game[x][y+1]
+    else:
+        # Check if every zombie only neighbours W/T/Z, else run invasion on that zombie
+        for i in range(len(game)):
+            for j in range(len(game[i])):
+                if all(v in ['W', 'T', 'Z'] for v in [game[i-1][j], game[i+1][j], game[i][j-1], game[i][j+1]]):
+                    continue
+                else:
+                    invasion(game, i, j)
+                # End if all()
+            # End for j
+        # End for i
+    # End if game
+    endgame(game)
+# End def invasion
 
 # This function fills a human/empty spot if it's not on the opposite side of the map.
 # This function uses the global vars width and height.
-def invade_human_dot(game_map, x, y, direction):
+def invade_human_dot(game, x, y, direction):
     # Verify new zombie does not jump to other side of map
     if direction == 0: # Spread up
-        if game_map[x-1] is game_map[height-1]:
-            return game_map[x-1][y]
+        if game[x-1] is game[height-1]:
+            return game[x-1][y]
         else:
             return 'Z'
-        # End if game_map[x-1]
+        # End if game[x-1]
     elif direction == 1: # Spread down
-        if game_map[x+1] is game_map[0]:
-            return game_map[x+1][y]
+        if game[x+1] is game[0]:
+            return game[x+1][y]
         else:
             return 'Z'
-        # End if game_map[x+1]
+        # End if game[x+1]
     elif direction == 2: # Spread left
-        if game_map[x][y-1] is game_map[x][width-1]:
-            return game_map[x][y-1]
+        if game[x][y-1] is game[x][width-1]:
+            return game[x][y-1]
         else:
             return 'Z'
-        # End if game_map[x][y+1]
+        # End if game[x][y+1]
     elif direction == 3: # Spread up
-        if game_map[x][y+1] is game_map[x][0]:
-            return game_map[x][y+1]
+        if game[x][y+1] is game[x][0]:
+            return game[x][y+1]
         else:
             return 'Z'
-        # End if game_map[x][y+1]
+        # End if game[x][y+1]
     # End if direction
 # End def invade_human_dot
 
 # This function checks for 15 zombies to break a wall, and re-checks if one is broken.
 # This function uses the global vars width and height.
-def break_wall(game_map):
-    for i in range(len(game_map)):
-        for j in range(len(game_map[i])):
+def break_wall(game):
+    for i in range(len(game)):
+        for j in range(len(game[i])):
             zombie_chain = ''
-            if game_map[i][j] == 'W':
-                # Check for 15 zombies in each direction
+            if game[i][j] == 'W':
+                # Check for 15 zombies in each direction, then recursively call the program
+                # After completing a full run, return the game map along each recursion to keep program from staying trapped in if/for statements
                 if i + 1 >=15: # Scan up
                     for c in range(len(15)):
-                        zombie_chain += game_map[i-c][j]
+                        zombie_chain += game[i-c][j]
                     # End for c
                     if re.search(r'[^Z]', zombie_chain):
                         try:
-                            if re.search('.', game_map[i+1][j]):
-                                game_map[i][j] = 'W'
-                                print_map(game_map)
-                                game_map = break_wall(game_map)
-                                return game_map
+                            if re.search('.', game[i+1][j]):
+                                game[i][j] = 'W'
+                                print_map(game)
+                                game = break_wall(game)
+                                return game
                             # End if re.search
                         except IndexError:
-                            game_map[i][j] = 'W'
-                            print_map(game_map)
-                            game_map = break_wall(game_map)
-                            return game_map
+                            game[i][j] = 'W'
+                            print_map(game)
+                            game = break_wall(game)
+                            return game
                         # End try/except
                     # End if re.search
+                # End if i
                 if height - i + 1 >= 15: # Scan down
                     for c in range(len(15)):
-                        zombie_chain += game_map[i+c][j]
+                        zombie_chain += game[i+c][j]
                     # End for c
                     if re.search(r'[^Z]', zombie_chain):
-                        if re.search('.', game_map[i-1][j]) and game_map[i-1][j] is not game_map[height-1][j]:
-                            game_map[i][j] = 'W'
-                            print_map(game_map)
-                            game_map = break_wall(game_map)
-                            return game_map
+                        if re.search('.', game[i-1][j]) and game[i-1][j] is not game[height-1][j]:
+                            game[i][j] = 'W'
+                            print_map(game)
+                            game = break_wall(game)
+                            return game
                         # End if re.search
                     # End if re.search
+                # End if height
                 if j + 1 >= 15: # Scan left
                     for c in range(len(15)):
-                        zombie_chain += game_map[i][j-c]
+                        zombie_chain += game[i][j-c]
                     # End for c
                     if re.search(r'[^Z]', zombie_chain):
                         try:
-                            if re.search('.', game_map[i][j+1]):
-                                game_map[i][j] = 'W'
-                                print_map(game_map)
-                                game_map = break_wall(game_map)
-                                return game_map
+                            if re.search('.', game[i][j+1]):
+                                game[i][j] = 'W'
+                                print_map(game)
+                                game = break_wall(game)
+                                return game
                             # End if re.search
                         except IndexError:
-                            game_map[i][j] = 'W'
-                            print_map(game_map)
-                            game_map = break_wall(game_map)
-                            return game_map
+                            game[i][j] = 'W'
+                            print_map(game)
+                            game = break_wall(game)
+                            return game
                         # End try/except
                     # End if re.search
+                # End if j
                 if width - j + 1 >= 15: # Scan right
                     for c in range(len(15)):
-                        zombie_chain += game_map[i][j+c]
+                        zombie_chain += game[i][j+c]
                     # End for c
                     if re.search(r'[^Z]', zombie_chain):
-                            if re.search('.', game_map[i][j-1]) and game_map[i][j-1] is not game_map[i][width-1]:
-                                game_map[i][j] = 'W'
-                                print_map(game_map)
-                                game_map = break_wall(game_map)
-                                return game_map
+                            if re.search('.', game[i][j-1]) and game[i][j-1] is not game[i][width-1]:
+                                game[i][j] = 'W'
+                                print_map(game)
+                                game = break_wall(game)
+                                return game
                             # End if re.search
                     # End if re.search
+                # End if width
+            # End if game[i][j]
+        # End for j
+    # End for i
+    return game
+# End def break_wall
 
-# This function joins the 2D array game_map into a string and prints it when called.
-def print_map(game_map):
-    for i in range(len(game_map)):
-        print ''.join(game_map[i])
+# This function joins the 2D array game into a string and prints it.
+def print_map(game):
+    game_str = ''
+    for i in range(len(game)):
+        game_str += ''.join(game[i])
+        game_str += '\n'
     # End for i
 
-    print '\n'
+    print game_str
 
-game_map = []
+def endgame()
+
+game = []
 x = 0
 y = 0
 game_setup = False
@@ -245,20 +273,20 @@ while True:
         print 'This is not a valid file, please try again.\n'
         continue
     else:
-        game_map, x, y = game_setup
+        game, x, y = game_setup
         break
     # End if game_setup
 # End while True
 
-print_map(game_map)
+print_map(game)
 
-width = len(game_map[0])
-height = len(game_map)
+width = len(game[0])
+height = len(game)
 
 if x == -1:
     print '\nThere were never any zombies.'
     print 'You survived!'
 else:
     print '\nLET THE INVASION BEGIN!\n'
-    invasion (game_map, x, y)
+    invasion(game, x, y)
 # End if x
