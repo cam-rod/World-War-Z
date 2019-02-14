@@ -28,3 +28,7 @@ Wingware Code 6N31E-RY9CY-J9VTQ-6KJD5
 E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/
 
 CREATE GLOBAL VARS (despite my internal strife)
+
+To do:
+    - reverse check verification
+    - all spot speck check verification (no spark)

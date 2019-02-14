@@ -20,7 +20,7 @@ game_source: FILE:  the file that contains the text form of the game map
 source_raw: STR: raw form of the entire file, used for verification
 source_lines: LIST: a list storing each line of game_source, used to load game
 source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
-first_zombie: INT: the location of one zombie on the map, used to start the invasion
+first_zombie: INT: the location of a starting zombie on the map; also used in reverse direction checks
 direction: INT: indicates the direction relative to [x][y] of zombie infection or breaking wall
 zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
 game_str: STR: string form of the current game map
@@ -82,51 +82,79 @@ def load_map(text_file):
 
 
 # This recursive function calls itself to spread zombies until they cannot expand further.
-def invasion(game, x, y):
+def invasion(game, x, y, first_zombie):
     # Check if any walls should be broken
     game = break_wall(game)
 
-    # Spread zombies across the map
+    # Spread zombies across the map recursively
     if game[x-1][y] not in ['Z', 'T', 'W']: # Zombie spread up
-        game[x-1][y] = invade_human_dot(game, x, y, 0)
-        if game[x-1][y] in ['.', 'H']: # Checks if value changed
-            pass
-        else:
+        if not_border(game, x, y, 0): # Checks if value changed
+            game[x-1][y] = 'Z'
             print_map(game)
-            invasion(game, x-1, y)
-        # End if game[x-1][y]
+            invasion(game, x-1, y, first_zombie)
+        else:
+            pass
+        # End if not_border
     elif game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
-        game[x+1][y] = invade_human_dot(game, x, y, 1)
-        if game[x+1][y] in ['.', 'H']: # Checks if value changed
-            pass
-        else:
+        if not_border(game, x, y, 1):
+            game[x+1][y] = 'Z'
             print_map(game)
-            invasion(game, x+1, y)
-        # End if game[x+1][y]
+            invasion(game, x+1, y, first_zombie)
+        else:
+            pass
+        # End if not_border
     elif game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
-        game[x][y-1] = invade_human_dot(game, x, y, 2)
-        if game[x][y-1] in ['.', 'H']: # Checks if value changed
-            pass
-        else:
+        if not_border(game, x, y, 2):
+            game[x][y-1] = 'Z'
             print_map(game)
-            invasion(game, x, y-1)
-        # End if game[x][y-1]
+            invasion(game, x, y-1, first_zombie)
+        else:
+            pass
+        # End if not_border
     elif game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
-        game[x][y+1] = invade_human_dot(game, x, y, 3)
-        if game[x][y+1] in ['.', 'H']: # Checks if value changed
-            pass
-        else:
+        if not_border(game, x, y, 3):
+            game[x][y+1] = 'Z'
             print_map(game)
-            invasion(game, x, y+1)
-        # End if game[x][y+1]
+            invasion(game, x, y+1, first_zombie)
+        else:
+            pass
+        # End if not_border
+    elif first_zombie[0] is not x and first_zombie[1] is not y:
+        # If not first zombie, follow chain in reverse until an open spot is found
+        if game[x][y+1] == 'Z':
+            if not_border(game, x, y, 3):
+                invasion(game, x, y+1, first_zombie)
+            else:
+                pass
+            # End if not_border
+        elif game[x][y-1] == 'Z':
+            if not_border(game, x, y, 2):
+                invasion(game, x, y-1, first_zombie)
+            else:
+                pass
+            # End if not_border
+        elif game[x+1][y] == 'Z':
+            if not_border(game, x, y, 1):
+                invasion(game, x+1, y, first_zombie)
+            else:
+                pass
+            # End if not_border
+        elif game[x-1][y] == 'Z':
+            if not_border(game, x, y, 0):
+                invasion(game, x-1, y, first_zombie)
+            else:
+                pass
+            # End if not_border
+        # End if game
     else:
-        # Check if every zombie only neighbours W/T/Z, else run invasion on that zombie
+        # Finally, check if every zombie only neighbours W/T/Z, else run invasion on that zombie
         for i in range(len(game)):
             for j in range(len(game[i])):
                 if all(v in ['W', 'T', 'Z'] for v in [game[i-1][j], game[i+1][j], game[i][j-1], game[i][j+1]]):
                     continue
                 else:
-                    invasion(game, i, j)
+                    first_zombie = [i, j]
+                    invasion(game, i, j, first_zombie)
                 # End if all()
             # End for j
         # End for i
@@ -134,36 +162,36 @@ def invasion(game, x, y):
     endgame(game)
 # End def invasion
 
-# This function fills a human/empty spot if it's not on the opposite side of the map.
+# This function verifies that an movement will not jump to the other side of the map.
 # This function uses the global vars width and height.
-def invade_human_dot(game, x, y, direction):
+def not_border(game, x, y, direction):
     # Verify new zombie does not jump to other side of map
     if direction == 0: # Spread up
         if game[x-1] is game[height-1]:
-            return game[x-1][y]
+            return False
         else:
-            return 'Z'
+            return True
         # End if game[x-1]
     elif direction == 1: # Spread down
         if game[x+1] is game[0]:
-            return game[x+1][y]
+            return False
         else:
-            return 'Z'
+            return True
         # End if game[x+1]
     elif direction == 2: # Spread left
         if game[x][y-1] is game[x][width-1]:
-            return game[x][y-1]
+            return False
         else:
-            return 'Z'
+            return True
         # End if game[x][y+1]
     elif direction == 3: # Spread up
         if game[x][y+1] is game[x][0]:
-            return game[x][y+1]
+            return False
         else:
-            return 'Z'
+            return True
         # End if game[x][y+1]
     # End if direction
-# End def invade_human_dot
+# End def not_border
 
 # This function checks for 15 zombies to break a wall, and re-checks if one is broken.
 # This function uses the global vars width and height.
@@ -256,11 +284,13 @@ def print_map(game):
 
     print game_str
 
-def endgame()
+def endgame():
+    pass
 
 game = []
 x = 0
 y = 0
+first_zombie = []
 game_setup = False
 
 print '==========WORLD WAR Z==========\n'
@@ -274,6 +304,7 @@ while True:
         continue
     else:
         game, x, y = game_setup
+        first_zombie = [x, y]
         break
     # End if game_setup
 # End while True
@@ -288,5 +319,5 @@ if x == -1:
     print 'You survived!'
 else:
     print '\nLET THE INVASION BEGIN!\n'
-    invasion(game, x, y)
+    invasion(game, x, y, first_zombie)
 # End if x
