@@ -20,7 +20,8 @@ game_source: FILE:  the file that contains the text form of the game map
 source_raw: STR: raw form of the entire file, used for verification
 source_lines: LIST: a list storing each line of game_source, used to load game
 source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
-first_zombie: INT: the location of a starting zombie on the map; also used in reverse direction checks
+first_zombie: INT: a temporary list indicating the location of one zombie in source_raw
+previous_zombies: LIST: a nested array of all zombies in the current branch of invading, allows for checking in reverse
 direction: INT: indicates the direction relative to [x][y] of zombie infection or breaking wall
 zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
 game_str: STR: string form of the current game map
@@ -89,7 +90,7 @@ def load_map(text_file):
 # x: the row of the current zombie trying to spread
 # y: the column of the current zombie trying to spread
 # previous_zombies: a nested array of all zombies in the current branch of invading, allows for checking in reverse
-def invasion(game, x, y, first_zombie):
+def invasion(game, x, y, previous_zombies):
     # Check if any walls should be broken
     game = break_wall(game)
 
@@ -97,62 +98,44 @@ def invasion(game, x, y, first_zombie):
     if game[x-1][y] not in ['Z', 'T', 'W']: # Zombie spread up
         if not_border(game, x, y, 0): # Checks if value changed
             game[x-1][y] = 'Z'
+            previouus_zombies.append([x-1, y])
             print_map(game)
-            invasion(game, x-1, y, first_zombie)
+            invasion(game, x-1, y, previous_zombies)
         else:
             pass
         # End if not_border
     elif game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
         if not_border(game, x, y, 1):
             game[x+1][y] = 'Z'
+            previouus_zombies.append([x+1, y])
             print_map(game)
-            invasion(game, x+1, y, first_zombie)
+            invasion(game, x+1, y, previous_zombies)
         else:
             pass
         # End if not_border
     elif game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
         if not_border(game, x, y, 2):
             game[x][y-1] = 'Z'
+            previouus_zombies.append([x, y-1])
             print_map(game)
-            invasion(game, x, y-1, first_zombie)
+            invasion(game, x, y-1, previous_zombies)
         else:
             pass
         # End if not_border
     elif game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
         if not_border(game, x, y, 3):
             game[x][y+1] = 'Z'
+            previouus_zombies.append([x, y+1])
             print_map(game)
-            invasion(game, x, y+1, first_zombie)
+            invasion(game, x, y+1, previous_zombies)
         else:
             pass
         # End if not_border
-    elif first_zombie[0] is not x and first_zombie[1] is not y:
-        # If not first zombie, follow chain in reverse until an open spot is found
-        if game[x][y+1] == 'Z':
-            if not_border(game, x, y, 3):
-                invasion(game, x, y+1, first_zombie)
-            else:
-                pass
-            # End if not_border
-        elif game[x][y-1] == 'Z':
-            if not_border(game, x, y, 2):
-                invasion(game, x, y-1, first_zombie)
-            else:
-                pass
-            # End if not_border
-        elif game[x+1][y] == 'Z':
-            if not_border(game, x, y, 1):
-                invasion(game, x+1, y, first_zombie)
-            else:
-                pass
-            # End if not_border
-        elif game[x-1][y] == 'Z':
-            if not_border(game, x, y, 0):
-                invasion(game, x-1, y, first_zombie)
-            else:
-                pass
-            # End if not_border
-        # End if game
+    elif previous_zombies <> []:
+        # Try to invade in a different direction from the previous zombie
+        x, y = previous_zombies[-1]
+        del previous_zombies[-1]
+        invasion(game, x, y, previous_zombies)
     else:
         # Finally, check if every zombie only neighbours W/T/Z, else run invasion on that zombie
         for i in range(len(game)):
@@ -160,8 +143,8 @@ def invasion(game, x, y, first_zombie):
                 if all(v in ['W', 'T', 'Z'] for v in [game[i-1][j], game[i+1][j], game[i][j-1], game[i][j+1]]):
                     continue
                 else:
-                    first_zombie = [i, j]
-                    invasion(game, i, j, first_zombie)
+                    previous_zombies = []
+                    invasion(game, i, j, previous_zombies)
                 # End if all()
             # End for j
         # End for i
@@ -309,7 +292,7 @@ def endgame(game):
 game = []
 x = 0
 y = 0
-first_zombie = []
+previous_zombies = []
 game_setup = False
 
 print '==========WORLD WAR Z==========\n'
@@ -323,7 +306,6 @@ while True:
         continue
     else:
         game, x, y = game_setup
-        first_zombie = [x, y]
         break
     # End if game_setup
 # End while True
@@ -338,5 +320,5 @@ if x == -1:
     print 'You survived!'
 else:
     print '\nLET THE INVASION BEGIN!\n'
-    invasion(game, x, y, first_zombie)
+    invasion(game, x, y, previous_zombies)
 # End if x
