@@ -27,6 +27,9 @@ game_str: STR: string form of the current game map
 """
 
 # This function will read the file, verify the data, and return the map and zombies via 2 lists.
+# text_file: the directory location of the file
+# Returns false if the file location or the file itself is invalid
+# Returns the game_map, and coordinates of the first zombie if the file and its location is valid
 def load_map(text_file):
     game = []
     first_zombie = 0
@@ -78,10 +81,14 @@ def load_map(text_file):
     # End for l 
 
     return [game, x, y]
-# End def load_map
+# End load_map
 
 
 # This recursive function calls itself to spread zombies until they cannot expand further.
+# game: the list containing the game and locations of all components
+# x: the row of the current zombie trying to spread
+# y: the column of the current zombie trying to spread
+# previous_zombies: a nested array of all zombies in the current branch of invading, allows for checking in reverse
 def invasion(game, x, y, first_zombie):
     # Check if any walls should be broken
     game = break_wall(game)
@@ -160,10 +167,15 @@ def invasion(game, x, y, first_zombie):
         # End for i
     # End if game
     endgame(game)
-# End def invasion
+# End invasion
 
 # This function verifies that an movement will not jump to the other side of the map.
 # This function uses the global vars width and height.
+# game: the list containing the game and locations of all components
+# x: the row of the current zombie trying to spread
+# y: the column of the current zombie trying to spread
+# direction: indicates the direction the zombie is trying to spread
+# Returns True if expansion will not jump to other side of map, returns False otherwise
 def not_border(game, x, y, direction):
     # Verify new zombie does not jump to other side of map
     if direction == 0: # Spread up
@@ -191,10 +203,12 @@ def not_border(game, x, y, direction):
             return True
         # End if game[x][y+1]
     # End if direction
-# End def not_border
+# End not_border
 
 # This function checks for 15 zombies to break a wall, and re-checks if one is broken.
 # This function uses the global vars width and height.
+# game: the list containing the game and locations of all components
+# Returns the updated game map
 def break_wall(game):
     for i in range(len(game)):
         for j in range(len(game[i])):
@@ -272,9 +286,10 @@ def break_wall(game):
         # End for j
     # End for i
     return game
-# End def break_wall
+# End break_wall
 
 # This function joins the 2D array game into a string and prints it.
+# game: the list containing the game and locations of all components
 def print_map(game):
     game_str = ''
     for i in range(len(game)):
@@ -283,9 +298,13 @@ def print_map(game):
     # End for i
 
     print game_str
+# End print_map
 
-def endgame():
+# This function determines if any humans survived, and prints an appropriate message.
+# game: the list containing the game and locations of all components
+def endgame(game):
     pass
+# End endgame
 
 game = []
 x = 0
