@@ -141,15 +141,15 @@ def invasion(game, x, y, previous_zombies):
                 elif game[i+1][j] not in ['W', 'T', 'Z']:
                     if not_border(game, i, j, 1):
                         previous_zombies = []
-                        invasion(game, i, j previous_zombies)
+                        invasion(game, i, j, previous_zombies)
                 elif game[i][j-1] not in ['W', 'T', 'Z']:
                     if not_border(game, i, j, 2):
                         previous_zombies = []
-                        invasion(game, i, j previous_zombies)
+                        invasion(game, i, j, previous_zombies)
                 elif game[i][j+1] not in ['W', 'T', 'Z']:
                     if not_border(game, i, j, 3):
                         previous_zombies = []
-                        invasion(game, i, j previous_zombies)
+                        invasion(game, i, j, previous_zombies)
                 # End if all()
             # End for j
         # End for i
@@ -301,7 +301,28 @@ def print_map(game):
 # This function determines if any humans survived, and prints an appropriate message.
 # game: the list containing the game and locations of all components
 def endgame(game):
-    pass
+    """
+    Data Dictionary
+    
+    game_str: STR: string form of the current game map
+    survivors: INT: number of humans still on the map
+    """
+    # Join the map into one string and check for humans
+    game_str = ''
+    for i in range(len(game)):
+        game_str += ''.join(game[i])
+    survivors = len(re.findall('H', game_str))
+
+    if survivors == 0:
+        print 'All humans were killed in the invasion.'
+        print 'You failed!'
+    else:
+        print 'In the end, {} human{} survived the invasion'.format(survivors, \
+                                                                    's' if survivors == 1 else '')
+        print 'You won!'
+    
+    print '\nThanks for playing World War Z!'
+
 # End endgame
 
 game = []
@@ -332,7 +353,7 @@ height = len(game)
 
 if x == -1:
     print '\nThere were never any zombies.'
-    print 'You survived!'
+    print 'You won!'
 else:
     print '\nLET THE INVASION BEGIN!\n'
     invasion(game, x, y, previous_zombies)
