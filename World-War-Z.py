@@ -15,14 +15,6 @@ height: INT: the height of the map
 x: INT: indicates the row of the zombie being checked for spreading
 y: INT: indicates the column of the zombie being checked for spreading
 
-text_file: STR: the location of the file containing the game map
-game_source: FILE:  the file that contains the text form of the game map
-source_raw: STR: raw form of the entire file, used for verification
-source_lines: LIST: a list storing each line of game_source, used to load game
-source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
-first_zombie: INT: a temporary list indicating the location of one zombie in source_raw
-previous_zombies: LIST: a nested array of all zombies in the current branch of invading, allows for checking in reverse
-direction: INT: indicates the direction relative to [x][y] of zombie infection or breaking wall
 zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
 game_str: STR: string form of the current game map
 """
@@ -32,6 +24,15 @@ game_str: STR: string form of the current game map
 # Returns false if the file location or the file itself is invalid
 # Returns the game_map, and coordinates of the first zombie if the file and its location is valid
 def load_map(text_file):
+    """
+    Data Dictionary
+
+    game_source: FILE:  the file that contains the text form of the game map
+    source_raw: STR: raw form of the entire file, used for verification
+    source_lines: LIST: a list storing each line of game_source, used to load game
+    source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
+    first_zombie: INT: a temporary list indicating the location of one zombie in source_raw
+    """
     game = []
     first_zombie = 0
     x = 0
@@ -91,6 +92,7 @@ def load_map(text_file):
 # y: the column of the current zombie trying to spread
 # previous_zombies: a nested array of all zombies in the current branch of invading, allows for checking in reverse
 def invasion(game, x, y, previous_zombies):
+
     # Check if any walls should be broken
     game = break_wall(game)
 
@@ -98,7 +100,7 @@ def invasion(game, x, y, previous_zombies):
     if game[x-1][y] not in ['Z', 'T', 'W']: # Zombie spread up
         if not_border(game, x, y, 0): # Checks if value changed
             game[x-1][y] = 'Z'
-            previouus_zombies.append([x-1, y])
+            previous_zombies.append([x-1, y])
             print_map(game)
             invasion(game, x-1, y, previous_zombies)
         else:
@@ -107,7 +109,7 @@ def invasion(game, x, y, previous_zombies):
     elif game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
         if not_border(game, x, y, 1):
             game[x+1][y] = 'Z'
-            previouus_zombies.append([x+1, y])
+            previous_zombies.append([x+1, y])
             print_map(game)
             invasion(game, x+1, y, previous_zombies)
         else:
@@ -116,7 +118,7 @@ def invasion(game, x, y, previous_zombies):
     elif game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
         if not_border(game, x, y, 2):
             game[x][y-1] = 'Z'
-            previouus_zombies.append([x, y-1])
+            previous_zombies.append([x, y-1])
             print_map(game)
             invasion(game, x, y-1, previous_zombies)
         else:
@@ -125,7 +127,7 @@ def invasion(game, x, y, previous_zombies):
     elif game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
         if not_border(game, x, y, 3):
             game[x][y+1] = 'Z'
-            previouus_zombies.append([x, y+1])
+            previous_zombies.append([x, y+1])
             print_map(game)
             invasion(game, x, y+1, previous_zombies)
         else:
@@ -193,6 +195,11 @@ def not_border(game, x, y, direction):
 # game: the list containing the game and locations of all components
 # Returns the updated game map
 def break_wall(game):
+    """
+    Data Dictionary
+    
+    zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
+    """
     for i in range(len(game)):
         for j in range(len(game[i])):
             zombie_chain = ''
@@ -274,6 +281,11 @@ def break_wall(game):
 # This function joins the 2D array game into a string and prints it.
 # game: the list containing the game and locations of all components
 def print_map(game):
+    """
+    Data Dictionary
+    
+    game_str: STR: string form of the current game map
+    """
     game_str = ''
     for i in range(len(game)):
         game_str += ''.join(game[i])
