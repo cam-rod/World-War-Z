@@ -103,8 +103,6 @@ def invasion(game, x, y, previous_zombies):
             previous_zombies.append([x-1, y])
             print_map(game)
             invasion(game, x-1, y, previous_zombies)
-        else:
-            pass
         # End if not_border
     elif game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
         if not_border(game, x, y, 1):
@@ -112,8 +110,6 @@ def invasion(game, x, y, previous_zombies):
             previous_zombies.append([x+1, y])
             print_map(game)
             invasion(game, x+1, y, previous_zombies)
-        else:
-            pass
         # End if not_border
     elif game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
         if not_border(game, x, y, 2):
@@ -121,8 +117,6 @@ def invasion(game, x, y, previous_zombies):
             previous_zombies.append([x, y-1])
             print_map(game)
             invasion(game, x, y-1, previous_zombies)
-        else:
-            pass
         # End if not_border
     elif game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
         if not_border(game, x, y, 3):
@@ -130,8 +124,6 @@ def invasion(game, x, y, previous_zombies):
             previous_zombies.append([x, y+1])
             print_map(game)
             invasion(game, x, y+1, previous_zombies)
-        else:
-            pass
         # End if not_border
     elif previous_zombies <> []:
         # Try to invade in a different direction from the previous zombie
@@ -142,11 +134,22 @@ def invasion(game, x, y, previous_zombies):
         # Finally, check if every zombie only neighbours W/T/Z, else run invasion on that zombie
         for i in range(len(game)):
             for j in range(len(game[i])):
-                if all(v in ['W', 'T', 'Z'] for v in [game[i-1][j], game[i+1][j], game[i][j-1], game[i][j+1]]):
-                    continue
-                else:
-                    previous_zombies = []
-                    invasion(game, i, j, previous_zombies)
+                if game[i-1][j] not in ['W', 'T', 'Z']:
+                    if not_border(game, i, j, 0):
+                        previous_zombies = []
+                        invasion(game, i, j, previous_zombies)
+                elif game[i+1][j] not in ['W', 'T', 'Z']:
+                    if not_border(game, i, j, 1):
+                        previous_zombies = []
+                        invasion(game, i, j previous_zombies)
+                elif game[i][j-1] not in ['W', 'T', 'Z']:
+                    if not_border(game, i, j, 2):
+                        previous_zombies = []
+                        invasion(game, i, j previous_zombies)
+                elif game[i][j+1] not in ['W', 'T', 'Z']:
+                    if not_border(game, i, j, 3):
+                        previous_zombies = []
+                        invasion(game, i, j previous_zombies)
                 # End if all()
             # End for j
         # End for i
