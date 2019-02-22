@@ -154,7 +154,6 @@ def invasion(game, x, y, previous_zombies):
             # End for j
         # End for i
     # End if game
-    endgame(game)
 # End invasion
 
 # This function verifies that an movement will not jump to the other side of the map.
@@ -209,66 +208,66 @@ def break_wall(game):
             if game[i][j] == 'W':
                 # Check for 15 zombies in each direction, then recursively call the program
                 # After completing a full run, return the game map along each recursion to keep program from staying trapped in if/for statements
-                if i + 1 >=15: # Scan up
-                    for c in range(len(15)):
+                if i >=15: # Scan up
+                    for c in range(15):
                         zombie_chain += game[i-c][j]
                     # End for c
-                    if re.search(r'[^Z]', zombie_chain):
+                    if not re.search(r'[^Z]', zombie_chain):
                         try:
                             if re.search('.', game[i+1][j]):
-                                game[i][j] = 'W'
+                                game[i][j] = 'Z'
                                 print_map(game)
                                 game = break_wall(game)
                                 return game
                             # End if re.search
                         except IndexError:
-                            game[i][j] = 'W'
+                            game[i][j] = 'Z'
                             print_map(game)
                             game = break_wall(game)
                             return game
                         # End try/except
                     # End if re.search
                 # End if i
-                if height - i + 1 >= 15: # Scan down
-                    for c in range(len(15)):
+                if height - i - 1 >= 15: # Scan down
+                    for c in range(15):
                         zombie_chain += game[i+c][j]
                     # End for c
-                    if re.search(r'[^Z]', zombie_chain):
-                        if re.search('.', game[i-1][j]) and game[i-1][j] is not game[height-1][j]:
-                            game[i][j] = 'W'
+                    if not re.search(r'[^Z]', zombie_chain):
+                        if re.search('.', game[i-1][j]) or game[i-1][j] is game[height-1][j]:
+                            game[i][j] = 'Z'
                             print_map(game)
                             game = break_wall(game)
                             return game
                         # End if re.search
                     # End if re.search
                 # End if height
-                if j + 1 >= 15: # Scan left
-                    for c in range(len(15)):
+                if j >= 15: # Scan left
+                    for c in range(15):
                         zombie_chain += game[i][j-c]
                     # End for c
-                    if re.search(r'[^Z]', zombie_chain):
+                    if not re.search(r'[^Z]', zombie_chain):
                         try:
                             if re.search('.', game[i][j+1]):
-                                game[i][j] = 'W'
+                                game[i][j] = 'Z'
                                 print_map(game)
                                 game = break_wall(game)
                                 return game
                             # End if re.search
                         except IndexError:
-                            game[i][j] = 'W'
+                            game[i][j] = 'Z'
                             print_map(game)
                             game = break_wall(game)
                             return game
                         # End try/except
                     # End if re.search
                 # End if j
-                if width - j + 1 >= 15: # Scan right
-                    for c in range(len(15)):
+                if width - j - 1 >= 15: # Scan right
+                    for c in range(15):
                         zombie_chain += game[i][j+c]
                     # End for c
-                    if re.search(r'[^Z]', zombie_chain):
-                            if re.search('.', game[i][j-1]) and game[i][j-1] is not game[i][width-1]:
-                                game[i][j] = 'W'
+                    if not re.search(r'[^Z]', zombie_chain):
+                            if re.search('.', game[i][j-1]) or game[i][j-1] is game[i][width-1]:
+                                game[i][j] = 'Z'
                                 print_map(game)
                                 game = break_wall(game)
                                 return game
@@ -317,8 +316,8 @@ def endgame(game):
         print 'All humans were killed in the invasion.'
         print 'You failed!'
     else:
-        print 'In the end, {} human{} survived the invasion'.format(survivors, \
-                                                                    's' if survivors == 1 else '')
+        print 'In the end, {} human{} survived the invasion.'.format(survivors, \
+                                                                    's' if survivors <> 1 else '')
         print 'You won!'
     
     print '\nThanks for playing World War Z!'
@@ -357,4 +356,5 @@ if x == -1:
 else:
     print '\nLET THE INVASION BEGIN!\n'
     invasion(game, x, y, previous_zombies)
+    endgame(game)
 # End if x
