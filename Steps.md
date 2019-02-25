@@ -38,3 +38,4 @@ Fixes:
 
   - Fixed misalignment of zombie spreading based on first_zombie code [line 70]
   - Fixed not_border check for index location [line 166, 172, 178, 184]
+  - Updated break_wall() to generate zombie chain w/o including wall itself [line 210, 230, 243, 263]
