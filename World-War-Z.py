@@ -170,7 +170,7 @@ def not_border(game, x, y, direction):
             return True
         # End if game[x-1]
     elif direction == 1: # Spread down
-        if game[x+1] == len(game):
+        if x+1 == len(game):
             return False
         else:
             return True
@@ -212,7 +212,7 @@ def break_wall(game):
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
                         try:
-                            if re.search('.', game[i+1][j]):
+                            if re.search(r'[.]', game[i+1][j]):
                                 game[i][j] = 'Z'
                                 print_map(game)
                                 game = break_wall(game)
@@ -231,7 +231,7 @@ def break_wall(game):
                         zombie_chain += game[i+c][j]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
-                        if re.search('.', game[i-1][j]) or game[i-1][j] is game[height-1][j]:
+                        if re.search(r'[.]', game[i-1][j]) or i-1 == -1:
                             game[i][j] = 'Z'
                             print_map(game)
                             game = break_wall(game)
@@ -245,7 +245,7 @@ def break_wall(game):
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
                         try:
-                            if re.search('.', game[i][j+1]):
+                            if re.search(r'[.]', game[i][j+1]):
                                 game[i][j] = 'Z'
                                 print_map(game)
                                 game = break_wall(game)
@@ -264,12 +264,12 @@ def break_wall(game):
                         zombie_chain += game[i][j+c]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
-                            if re.search('.', game[i][j-1]) or game[i][j-1] is game[i][width-1]:
-                                game[i][j] = 'Z'
-                                print_map(game)
-                                game = break_wall(game)
-                                return game
-                            # End if re.search
+                        if re.search(r'[.]', game[i][j-1]) or j-1 == -1:
+                            game[i][j] = 'Z'
+                            print_map(game)
+                            game = break_wall(game)
+                            return game
+                        # End if re.search
                     # End if re.search
                 # End if width
             # End if game[i][j]
