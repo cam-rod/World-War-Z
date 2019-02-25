@@ -33,3 +33,8 @@ E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/
 C:/Users/rodriguezc/World-War-Z/Requirements/1.04 Testing files/
 
 CREATE GLOBAL VARS (despite my internal strife)
+
+Fixes:
+
+  - Fixed misalignment of zombie spreading based on first_zombie code [line 70]
+  - Fixed not_border check for index location [line 166, 172, 178, 184]
