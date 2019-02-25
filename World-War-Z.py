@@ -4,6 +4,7 @@
 
 # This module is used to validate the source text file.
 import re
+import time
 
 """
 Data Dictionary
@@ -14,9 +15,7 @@ width: INT: the width of the map
 height: INT: the height of the map
 x: INT: indicates the row of the zombie being checked for spreading
 y: INT: indicates the column of the zombie being checked for spreading
-
-zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
-game_str: STR: string form of the current game map
+line_length: INT: contains the length of the first line, to ensure all lines are the same length and to verify zombies don't jump across map
 """
 
 # This function will read the file, verify the data, and return the map and zombies via 2 lists.
@@ -30,7 +29,6 @@ def load_map(text_file):
     game_source: FILE:  the file that contains the text form of the game map
     source_raw: STR: raw form of the entire file, used for verification
     source_lines: LIST: a list storing each line of game_source, used to load game
-    source_line_length: INT: contains the length of the first line, to ensure all lines are the same length
     first_zombie: INT: a temporary list indicating the location of one zombie in source_raw
     """
     game = []
@@ -47,13 +45,13 @@ def load_map(text_file):
         return False
     # End try/except
     source_lines = source_raw.splitlines()
-    source_line_length = len(source_lines[0])
+    line_length = len(source_lines[0])
     
     # Validate game_source has 1 human, only contains valid characters, and is a rectangle
     if len(re.findall('H', source_raw)) == 1:
         if re.search(r'[^HWTZ.\n]', source_raw) is None:
             for l in source_lines[1:]:
-                if len(l) == source_line_length:
+                if len(l) == line_length:
                     continue
                 else:
                     return False
@@ -69,8 +67,8 @@ def load_map(text_file):
     # Locate one zombies in the map, and assign to x and y
     try:
         first_zombie += source_raw.index('Z')
-        x = first_zombie / source_line_length
-        y = first_zombie % source_line_length
+        x = first_zombie / line_length
+        y = first_zombie % line_length - x
     except ValueError:
         # Indicates there are no zombies
         x = -1
@@ -82,7 +80,7 @@ def load_map(text_file):
         game.append(one_row)
     # End for l 
 
-    return [game, x, y]
+    return [game, x, y, line_length]
 # End load_map
 
 
@@ -164,27 +162,27 @@ def invasion(game, x, y, previous_zombies):
 # direction: indicates the direction the zombie is trying to spread
 # Returns True if expansion will not jump to other side of map, returns False otherwise
 def not_border(game, x, y, direction):
-    # Verify new zombie does not jump to other side of map
+    # Verify movement does not jump to other side of map
     if direction == 0: # Spread up
-        if game[x-1] is game[height-1]:
+        if x-1 == -1:
             return False
         else:
             return True
         # End if game[x-1]
     elif direction == 1: # Spread down
-        if game[x+1] is game[0]:
+        if game[x+1] == len(game):
             return False
         else:
             return True
         # End if game[x+1]
     elif direction == 2: # Spread left
-        if game[x][y-1] is game[x][width-1]:
+        if y-1 == -1:
             return False
         else:
             return True
         # End if game[x][y+1]
-    elif direction == 3: # Spread up
-        if game[x][y+1] is game[x][0]:
+    elif direction == 3: # Spread right
+        if y+1 == line_length:
             return False
         else:
             return True
@@ -209,7 +207,7 @@ def break_wall(game):
                 # Check for 15 zombies in each direction, then recursively call the program
                 # After completing a full run, return the game map along each recursion to keep program from staying trapped in if/for statements
                 if i >=15: # Scan up
-                    for c in range(15):
+                    for c in range(1,16):
                         zombie_chain += game[i-c][j]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
@@ -229,7 +227,7 @@ def break_wall(game):
                     # End if re.search
                 # End if i
                 if height - i - 1 >= 15: # Scan down
-                    for c in range(15):
+                    for c in range(1,16):
                         zombie_chain += game[i+c][j]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
@@ -242,7 +240,7 @@ def break_wall(game):
                     # End if re.search
                 # End if height
                 if j >= 15: # Scan left
-                    for c in range(15):
+                    for c in range(1,16):
                         zombie_chain += game[i][j-c]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
@@ -262,7 +260,7 @@ def break_wall(game):
                     # End if re.search
                 # End if j
                 if width - j - 1 >= 15: # Scan right
-                    for c in range(15):
+                    for c in range(1,16):
                         zombie_chain += game[i][j+c]
                     # End for c
                     if not re.search(r'[^Z]', zombie_chain):
@@ -295,6 +293,7 @@ def print_map(game):
     # End for i
 
     print game_str
+    time.sleep(0.1)
 # End print_map
 
 # This function determines if any humans survived, and prints an appropriate message.
@@ -327,6 +326,7 @@ def endgame(game):
 game = []
 x = 0
 y = 0
+line_length = 0
 previous_zombies = []
 game_setup = False
 
@@ -340,7 +340,7 @@ while True:
         print 'This is not a valid file, please try again.\n'
         continue
     else:
-        game, x, y = game_setup
+        game, x, y, line_length = game_setup
         break
     # End if game_setup
 # End while True
