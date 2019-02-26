@@ -48,7 +48,7 @@ def load_map(text_file):
     line_length = len(source_lines[0])
     
     # Validate game_source has 1 human, only contains valid characters, and is a rectangle
-    if len(re.findall('H', source_raw)) == 1:
+    if len(re.findall('H', source_raw)) >= 1:
         if re.search(r'[^HWTZ.\n]', source_raw) is None:
             for l in source_lines[1:]:
                 if len(l) == line_length:
@@ -68,7 +68,13 @@ def load_map(text_file):
     try:
         first_zombie += source_raw.index('Z')
         x = first_zombie / line_length
+        if first_zombie % line_length == 0:
+            x -= 1
+        # End if first_zombie
         y = first_zombie % line_length - x
+        if y < 0:
+            y = line_length + y
+        # End if y
     except ValueError:
         # Indicates there are no zombies
         x = -1
