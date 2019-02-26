@@ -165,9 +165,9 @@ def break_wall(game):
     
     zombie_chain: STR: 15 spaces in one direction, to be checked if they are all zombies
     """
+    zombie_chain = ''
     for i in range(len(game)):
         for j in range(len(game[i])):
-            zombie_chain = ''
             if game[i][j] == 'W':
                 # Check for 15 zombies in each direction, then recursively call the program
                 # After completing a full run, return the game map to reduce recursion levels
@@ -187,6 +187,8 @@ def break_wall(game):
                             print_map(game)
                             game = invasion(game, i, j)
                         # End try/except
+                    else:
+                        zombie_chain = ''
                     # End if re.search
                 # End if i
                 if height - i - 1 >= 15: # Scan down
@@ -199,6 +201,8 @@ def break_wall(game):
                             print_map(game)
                             game = invasion(game, i, j)
                         # End if re.search
+                    else:
+                        zombie_chain = ''
                     # End if re.search
                 # End if height
                 if j >= 15: # Scan left
@@ -217,6 +221,8 @@ def break_wall(game):
                             print_map(game)
                             game = invasion(game, i, j)
                         # End try/except
+                    else:
+                        zombie_chain = ''
                     # End if re.search
                 # End if j
                 if width - j - 1 >= 15: # Scan right
@@ -229,6 +235,8 @@ def break_wall(game):
                             print_map(game)
                             game = invasion(game, i, j)
                         # End if re.search
+                    else:
+                        zombie_chain = ''
                     # End if re.search
                 # End if width
             # End if game[i][j]
@@ -305,6 +313,7 @@ def endgame(game):
     # End if survivors
 
     print '\nThanks for playing World War Z!'
+    time.sleep(3)
 # End endgame
 
 game = []
@@ -336,6 +345,9 @@ height = len(game)
 if x == -1:
     print '\nThere were never any zombies.'
     print 'You survived!'
+
+    print '\nThanks for playing World War Z!'
+    time.sleep(3)
 else:
     print '\nLET THE INVASION BEGIN!\n'
     time.sleep(0.5)
