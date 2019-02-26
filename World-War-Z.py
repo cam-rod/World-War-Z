@@ -100,16 +100,16 @@ def invasion(game, x, y):
         print_map(game)
         game = invasion(game, x-1, y)
         # End if not_border
-    elif not_border(game, x, y, 1) and game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
+    if not_border(game, x, y, 1) and game[x+1][y] not in ['Z', 'T', 'W']: # Zombie spread down
         game[x+1][y] = 'Z'
         print_map(game)
         game = invasion(game, x+1, y)
-    elif not_border(game, x, y, 2) and game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
+    if not_border(game, x, y, 2) and game[x][y-1] not in ['Z', 'T', 'W']: # Zombie spread left
         game[x][y-1] = 'Z'
         print_map(game)
         game = invasion(game, x, y-1)
         # End if not_border
-    elif not_border(game, x, y, 3) and game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
+    if not_border(game, x, y, 3) and game[x][y+1] not in ['Z', 'T', 'W']: # Zombie spread right
         game[x][y+1] = 'Z'
         print_map(game)
         game = invasion(game, x, y+1)
@@ -180,12 +180,12 @@ def break_wall(game):
                             if re.search(r'[.]', game[i+1][j]):
                                 game[i][j] = 'Z'
                                 print_map(game)
-                                game = invasion(game, x, y)
+                                game = invasion(game, i, j)
                             # End if re.search
                         except IndexError:
                             game[i][j] = 'Z'
                             print_map(game)
-                            game = invasion(game, x, y)
+                            game = invasion(game, i, j)
                         # End try/except
                     # End if re.search
                 # End if i
@@ -197,7 +197,7 @@ def break_wall(game):
                         if re.search(r'[.]', game[i-1][j]) or i-1 == -1:
                             game[i][j] = 'Z'
                             print_map(game)
-                            game = invasion(game, x, y)
+                            game = invasion(game, i, j)
                         # End if re.search
                     # End if re.search
                 # End if height
@@ -210,12 +210,12 @@ def break_wall(game):
                             if re.search(r'[.]', game[i][j+1]):
                                 game[i][j] = 'Z'
                                 print_map(game)
-                                game = invasion(game, x, y)
+                                game = invasion(game, i, j)
                             # End if re.search
                         except IndexError:
                             game[i][j] = 'Z'
                             print_map(game)
-                            game = invasion(game, x, y)
+                            game = invasion(game, i, j)
                         # End try/except
                     # End if re.search
                 # End if j
@@ -227,7 +227,7 @@ def break_wall(game):
                         if re.search(r'[.]', game[i][j-1]) or j-1 == -1:
                             game[i][j] = 'Z'
                             print_map(game)
-                            game = invasion(game, x, y)
+                            game = invasion(game, i, j)
                         # End if re.search
                     # End if re.search
                 # End if width
@@ -239,26 +239,25 @@ def break_wall(game):
 
 # This function will return the location of a zombie if the current chain can no longer expand
 # game: the list containing the game and locations of all components
-
-def new_zombie():
+# Returns the final map
+def new_zombie(game):
     # Check if every zombie only neighbours W/T/Z, else run invasion on that zombie
     for i in range(len(game)):
         for j in range(len(game[i])):
-            if game[i-1][j] not in ['W', 'T', 'Z']: # Check up
-                if not_border(game, i, j, 0):
-                    game = invasion(game, i, j)
-            elif game[i+1][j] not in ['W', 'T', 'Z']: # Check down
-                if not_border(game, i, j, 1):
-                    game = invasion(game, i, j)
-            elif game[i][j-1] not in ['W', 'T', 'Z']: # Check left
-                if not_border(game, i, j, 2):
-                    game = invasion(game, i, j)
-            elif game[i][j+1] not in ['W', 'T', 'Z']: # Check right
-                if not_border(game, i, j, 3):
-                    game = invasion(game, i, j)
+            if not_border(game, i, j, 0) and game[i-1][j] not in ['W', 'T', 'Z']: # Check up
+                game = invasion(game, i, j)
+            elif not_border(game, i, j, 1) and game[i+1][j] not in ['W', 'T', 'Z']: # Check down
+                game = invasion(game, i, j)
+            elif not_border(game, i, j, 2) and game[i][j-1] not in ['W', 'T', 'Z']: # Check left
+                game = invasion(game, i, j)
+            elif not_border(game, i, j, 3) and game[i][j+1] not in ['W', 'T', 'Z']: # Check right
+                game = invasion(game, i, j)
             # End if all()
         # End for j
     # End for i
+
+    return game
+# End new_zombie
 
 # This function joins the 2D array game into a string and prints it.
 # game: the list containing the game and locations of all components
