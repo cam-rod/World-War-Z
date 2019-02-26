@@ -244,15 +244,17 @@ def new_zombie(game):
     # Check if every zombie only neighbours W/T/Z, else run invasion on that zombie
     for i in range(len(game)):
         for j in range(len(game[i])):
-            if not_border(game, i, j, 0) and game[i-1][j] not in ['W', 'T', 'Z']: # Check up
-                game = invasion(game, i, j)
-            elif not_border(game, i, j, 1) and game[i+1][j] not in ['W', 'T', 'Z']: # Check down
-                game = invasion(game, i, j)
-            elif not_border(game, i, j, 2) and game[i][j-1] not in ['W', 'T', 'Z']: # Check left
-                game = invasion(game, i, j)
-            elif not_border(game, i, j, 3) and game[i][j+1] not in ['W', 'T', 'Z']: # Check right
-                game = invasion(game, i, j)
-            # End if all()
+            if game[i][j] == 'Z':
+                if not_border(game, i, j, 0) and game[i-1][j] not in ['W', 'T', 'Z']: # Check up
+                    game = invasion(game, i, j)
+                elif not_border(game, i, j, 1) and game[i+1][j] not in ['W', 'T', 'Z']: # Check down
+                    game = invasion(game, i, j)
+                elif not_border(game, i, j, 2) and game[i][j-1] not in ['W', 'T', 'Z']: # Check left
+                    game = invasion(game, i, j)
+                elif not_border(game, i, j, 3) and game[i][j+1] not in ['W', 'T', 'Z']: # Check right
+                    game = invasion(game, i, j)
+                # End if not_border
+            # End if game[i][j]
         # End for j
     # End for i
 
@@ -290,18 +292,19 @@ def endgame(game):
     game_str = ''
     for i in range(len(game)):
         game_str += ''.join(game[i])
+    # End for i
     survivors = len(re.findall('H', game_str))
 
     if survivors == 0:
         print 'All humans were killed in the invasion.'
-        print 'You failed!'
+        print 'You died!'
     else:
         print 'In the end, {} human{} survived the invasion.'.format(survivors, \
                                                                     's' if survivors <> 1 else '')
-        print 'You won!'
-    
-    print '\nThanks for playing World War Z!'
+        print 'You survived!'
+    # End if survivors
 
+    print '\nThanks for playing World War Z!'
 # End endgame
 
 game = []
@@ -332,7 +335,7 @@ height = len(game)
 
 if x == -1:
     print '\nThere were never any zombies.'
-    print 'You won!'
+    print 'You survived!'
 else:
     print '\nLET THE INVASION BEGIN!\n'
     time.sleep(0.5)
