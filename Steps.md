@@ -33,3 +33,5 @@ E:/ICS4U1/World-War-Z/Requirements/1.04 Testing Files/
 C:/Users/rodriguezc/World-War-Z/Requirements/1.04 Testing files/
 
 CREATE GLOBAL VARS (despite my internal strife)
+
+[https://sebastianraschka.com/Articles/2014_python_2_3_key_diff.html](https://sebastianraschka.com/Articles/2014_python_2_3_key_diff.html)
