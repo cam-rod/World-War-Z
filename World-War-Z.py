@@ -1,5 +1,5 @@
 # Cameron Rodriguez
-# DATE GOES HERE
+# Feb 27, 2019
 # This program is a game that determines whether humans are kept safe from zombies.
 
 # This module is used to validate the source text file.
@@ -47,6 +47,13 @@ def load_map(text_file):
     source_lines = source_raw.splitlines()
     line_length = len(source_lines[0])
     
+    # Load game data into game, with a list of rows containing a list of characters
+    for l in range(len(source_lines)):
+        one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
+        game.append(one_row)
+    # End for l 
+    print_map(game)
+    
     # Validate game_source has 1 human, only contains valid characters, and is a rectangle
     if len(re.findall('H', source_raw)) >= 1:
         if re.search(r'[^HWTZ.\n]', source_raw) is None:
@@ -79,12 +86,6 @@ def load_map(text_file):
         # Indicates there are no zombies
         x = -1
     # End try/except
-
-    # Load game data into game, with a list of rows containing a list of characters
-    for l in range(len(source_lines)):
-        one_row = [source_lines[l][i] for i in range(len(source_lines[l]))]
-        game.append(one_row)
-    # End for l 
 
     return [game, x, y, line_length]
 # End load_map
@@ -342,8 +343,6 @@ while True:
         break
     # End if game_setup
 # End while True
-
-print_map(game)
 
 width = len(game[0])
 height = len(game)
