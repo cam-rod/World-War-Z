@@ -3,5 +3,6 @@
     "cSpell.words": [
         "hwtz",
         "rodriguezc"
-    ]
+    ],
+    "python.linting.pylintEnabled": true
 }
